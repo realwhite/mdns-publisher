@@ -1,0 +1,14 @@
+[Unit]
+Description="mDNS publisher"
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ConditionPathExists=/etc/mdns-publisher.env
+EnvironmentFile=/etc/mdns-publisher.env
+ExecStart=/usr/bin/mdns-publisher
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

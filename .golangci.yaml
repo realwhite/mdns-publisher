@@ -1,0 +1,157 @@
+linters-settings:
+  gofumpt:
+    extra-rules: false
+  depguard:
+    rules:
+      main:
+        files:
+          - $all
+        allow:
+          - $gostd
+          - github.com
+  gci:
+    sections:
+      - standard # Standard section: captures all standard packages.
+      - default # Default section: contains all imports that could not be matched to another section type.
+  goconst:
+    min-len: 3
+    min-occurrences: 5
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - hugeParam # Config heavy, but we want to copy it on call
+      - whyNoLint
+      - rangeValCopy # economy on copies bytes - not good idea now
+      - commentedOutCode # todo 4605 remove here after big deal
+      - commentFormatting
+  godox:
+    # report any comments starting with keywords, this is useful for TODO or FIXME comments that
+    # might be left in the code accidentally and should be resolved before merging
+    keywords: # default keywords are TODO, BUG, and FIXME, these can be overwritten by this setting
+      #      - NOTE
+      - BUG
+      - OPTIMIZE # marks code that should be optimized before merging
+      - HACK # marks hack-arounds that should be removed before merging
+  gocyclo:
+    min-complexity: 25
+  goimports:
+    local-prefixes: gitlab.corp.mail.ru
+  gomnd:
+    checks:
+      - argument
+      - case
+      - condition
+      - return
+      # don't include the "operation" and "assign"
+      # - operation
+      # - assign
+  govet:
+    settings:
+      printf:
+        funcs:
+          - Debugf
+          - Infof
+          - Warnf
+          - Errorf
+          - DPanicf
+          - Panicf
+          - Fatalf
+  revive:
+    # see https://github.com/mgechev/revive#available-rules for details.
+    ignore-generated-header: true
+    severity: warning
+    rules:
+      - name: indent-error-flow
+        severity: warning
+      - name: add-constant
+        severity: warning
+        arguments:
+          - maxLitCount: "11"
+            allowStrs: '"","error","GET","POST","PUT","DELETE"'
+            allowInts: "0,1,2,3,4"
+            allowFloats: "0.0,0.,1.0,1.,2.0,2."
+  misspell:
+    locale: US
+
+run:
+  timeout: 3m
+
+linters:
+  # please, do not use `enable-all`: it's deprecated and will be removed soon.
+  # inverted configuration with `enable-all` and `disable` is not scalable during updates of golangci-lint
+  disable-all: true
+  enable:
+    - bodyclose
+    - depguard
+    - dogsled
+    - dupl
+    - errcheck
+    - exhaustive
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - gofumpt
+    - goimports
+    - gci
+    - gomnd
+    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - misspell
+    - nakedret
+    - noctx
+    - revive
+    - rowserrcheck
+    - staticcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
+    - godox
+    - asciicheck
+    - makezero
+    - loggercheck
+    - gocheckcompilerdirectives
+    - bidichk
+    - containedctx
+    - decorder
+    - durationcheck
+    - errchkjson
+    - errname
+    - ginkgolinter
+    - nilerr
+    - sqlclosecheck
+    - usestdlibvars
+    - wastedassign
+
+issues:
+  # Excluding configuration per-path, per-linter, per-text and per-source
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gomnd
+        - goconst
+        - revive
+        - funlen
+        - maintidx
+        - containedctx
+
+    # https://github.com/go-critic/go-critic/issues/926
+    - linters:
+        - gocritic
+      text: "unnecessaryDefer:"
+
+    - linters:
+        - stylecheck
+      text: "ST1003:"
